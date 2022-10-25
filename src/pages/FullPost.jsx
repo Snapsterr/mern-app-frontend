@@ -18,6 +18,7 @@ export const FullPost = () => {
     axios
       .get(`/posts/${id}`)
       .then((res) => {
+        console.log(res)
         setData(res.data)
         setIsLoading(false)
       })

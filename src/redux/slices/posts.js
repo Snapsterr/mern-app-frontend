@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "../../axios"
 
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const { data } = await axios.get("/posts")
-  return data
-})
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async (sortValue) => {
+    const { data } = await axios.get(`/posts?sort=${sortValue}`)
+    return data
+  }
+)
 
 export const fetchTags = createAsyncThunk("posts/fetchTags", async () => {
   const { data } = await axios.get("/tags")
@@ -60,6 +63,7 @@ const postsSlice = createSlice({
     },
     //fetchRemovePost
     [fetchRemovePost.pending]: (state, action) => {
+      console.log(state.posts.items)
       state.posts.items = state.posts.items.filter(
         (obj) => obj._id !== action.meta.arg
       )
