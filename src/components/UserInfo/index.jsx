@@ -1,11 +1,9 @@
 import React from "react"
+import { dateFormatter } from "../../utils/dateFormatter"
 import styles from "./UserInfo.module.scss"
 
 export const UserInfo = ({ avatarUrl, fullName, additionalText }) => {
-  const date = new Date(additionalText).toLocaleString("en-EU", {
-    dateStyle: "short",
-    timeStyle: "short",
-  })
+  const date = dateFormatter(additionalText)
   return (
     <div className={styles.root}>
       <img className={styles.avatar} src={avatarUrl} alt={fullName} />

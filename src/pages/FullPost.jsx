@@ -1,18 +1,22 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import axios from "../axios"
 
 import { Post } from "../components/Post"
 import { Index } from "../components/AddComment"
 import { CommentsBlock } from "../components/CommentsBlock"
-import { useState } from "react"
-import { useEffect } from "react"
 import ReactMarkdown from "react-markdown"
+import { useSelector } from "react-redux"
 
 export const FullPost = () => {
   const [data, setData] = useState()
+  const [comments, setComments] = useState()
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
   const { id } = useParams()
+
+  const userData = useSelector((state) => state.auth.data)
 
   useEffect(() => {
     axios
@@ -20,6 +24,7 @@ export const FullPost = () => {
       .then((res) => {
         console.log(res)
         setData(res.data)
+        setComments(res.data.comments)
         setIsLoading(false)
       })
       .catch((e) => {
@@ -28,11 +33,27 @@ export const FullPost = () => {
       })
   }, [])
 
+  const onSubmit = async (text) => {
+    try {
+      const fields = {
+        text,
+      }
+
+      setIsSubmitted(true)
+      await axios.post(`/posts/${id}/comment`, fields).then((res) => {
+        setData(res.data)
+        setComments(res.data.comments)
+        setIsSubmitted(false)
+      })
+    } catch (err) {
+      console.warn(err)
+      alert("Failed to create article")
+    }
+  }
+
   if (isLoading) {
     return <Post isLoading={isLoading} isFullPost />
   }
-
-  console.log(data)
 
   return (
     <>
@@ -43,32 +64,18 @@ export const FullPost = () => {
         user={data.user}
         createdAt={data.createdAt}
         viewsCount={data.viewsCount}
-        commentsCount={data.commentsCount}
+        commentsCount={data.comments.length}
         tags={data.tags}
         isFullPost
       >
         <ReactMarkdown children={data.text} />
       </Post>
-      <CommentsBlock
-        items={[
-          {
-            user: {
-              fullName: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-            },
-            text: "Это тестовый комментарий 555555",
-          },
-          {
-            user: {
-              fullName: "Иван Иванов",
-              avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-            },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-          },
-        ]}
-        isLoading={false}
-      >
-        <Index />
+      <CommentsBlock items={comments} isLoading={false}>
+        <Index
+          avatarUrl={userData.avatarUrl}
+          onSubmit={onSubmit}
+          isSubmitted={isSubmitted}
+        />
       </CommentsBlock>
     </>
   )
