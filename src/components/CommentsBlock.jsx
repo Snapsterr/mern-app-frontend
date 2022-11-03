@@ -11,7 +11,6 @@ import Skeleton from "@mui/material/Skeleton"
 import { dateFormatter } from "../utils/dateFormatter"
 
 export const CommentsBlock = ({ items, children, isLoading = true }) => {
-  console.log("items", items)
   return (
     <SideBlock title="Comments">
       <List>

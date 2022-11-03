@@ -7,19 +7,20 @@ import Grid from "@mui/material/Grid"
 import { Post } from "../components/Post"
 import { TagsBlock } from "../components/TagsBlock"
 import { CommentsBlock } from "../components/CommentsBlock"
-import { fetchPosts, fetchTags } from "../redux/slices/posts"
+import { fetchComments, fetchPosts, fetchTags } from "../redux/slices/posts"
 
 export const Home = () => {
   const [value, setValue] = useState("createdAt")
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.data)
-  const { posts, tags } = useSelector((state) => state.posts)
+  const { posts, tags, comments } = useSelector((state) => state.posts)
 
   const isPostsLoading = posts.status === "loading"
   const isTagsLoading = tags.status === "loading"
 
   useEffect(() => {
     dispatch(fetchTags())
+    dispatch(fetchComments())
   }, [])
 
   useEffect(() => {
@@ -35,18 +36,18 @@ export const Home = () => {
       <Tabs
         style={{ marginBottom: 15 }}
         value={value}
-        aria-label="basic tabs example"
         onChange={handleChange}
+        sx={{
+          "& button:hover": { backgroundColor: "#e9e9e9" },
+        }}
       >
         <Tab value="createdAt" label="New" />
         <Tab value="viewsCount" label="Popular" />
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
-          {(isPostsLoading ? [...Array(5)] : posts.items).map((obj, index) => {
-            console.log(obj)
-
-            return isPostsLoading ? (
+          {(isPostsLoading ? [...Array(5)] : posts.items).map((obj, index) =>
+            isPostsLoading ? (
               <Post key={index} isLoading={true} />
             ) : (
               <Post
@@ -64,29 +65,11 @@ export const Home = () => {
                 isEditable={userData?._id === obj.user._id}
               />
             )
-          })}
+          )}
         </Grid>
         <Grid xs={4} item>
           <TagsBlock items={tags.items} isLoading={isTagsLoading} />
-          <CommentsBlock
-            items={[
-              {
-                user: {
-                  fullName: "Вася Пупкин",
-                  avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-                },
-                text: "Это тестовый комментарий",
-              },
-              {
-                user: {
-                  fullName: "Иван Иванов",
-                  avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-                },
-                text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-              },
-            ]}
-            isLoading={false}
-          />
+          <CommentsBlock items={comments.items} isLoading={false} />
         </Grid>
       </Grid>
     </>
