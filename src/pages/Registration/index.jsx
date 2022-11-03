@@ -24,6 +24,7 @@ export const Registration = () => {
       fullName: "",
       email: "",
       password: "",
+      avararUrl: "https://mui.com/static/images/avatar/1.jpg",
     },
     mode: "onChange",
   })

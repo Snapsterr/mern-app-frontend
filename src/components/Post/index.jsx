@@ -27,20 +27,6 @@ export const Post = ({
   isLoading,
   isEditable,
 }) => {
-  // console.log(
-  //   id,
-  //   title,
-  //   createdAt,
-  //   imageUrl,
-  //   user,
-  //   viewsCount,
-  //   commentsCount,
-  //   tags,
-  //   children,
-  //   isFullPost,
-  //   isLoading,
-  //   isEditable
-  // )
   const dispatch = useDispatch()
 
   if (isLoading) {
