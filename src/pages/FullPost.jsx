@@ -7,12 +7,15 @@ import { Index } from "../components/AddComment"
 import { CommentsBlock } from "../components/CommentsBlock"
 import ReactMarkdown from "react-markdown"
 import { useSelector } from "react-redux"
+import { selectIsAuth } from "../redux/slices/auth"
 
 export const FullPost = () => {
   const [data, setData] = useState()
   const [comments, setComments] = useState()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const isAuth = useSelector(selectIsAuth)
 
   const { id } = useParams()
 
@@ -76,11 +79,13 @@ export const FullPost = () => {
         <ReactMarkdown children={data.text} />
       </Post>
       <CommentsBlock items={comments} isLoading={false}>
-        <Index
-          avatarUrl={userData.avatarUrl}
-          onSubmit={onSubmit}
-          isSubmitted={isSubmitted}
-        />
+        {isAuth ? (
+          <Index
+            avatarUrl={userData.avatarUrl}
+            onSubmit={onSubmit}
+            isSubmitted={isSubmitted}
+          />
+        ) : null}
       </CommentsBlock>
     </>
   )
